@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="org.gzbpvi.xiaochengxv.dao.CheckTaskInfoDao">
+
+	<select id="getCheckTaskInfoByChecker" parameterType="String"
+		resultType="org.gzbpvi.xiaochengxv.domain.CheckTaskInfo">
+		select distinct unitname,taskno,linkman,mobile from eosdb.checktask where
+		confirm!='审核作废' and confirm!='作废'
+		and checker like #{checker}
+		and checkdate&gt;=to_char(sysdate - 3,'yyyy-mm-dd') and checkdate
+		&lt;=to_char(sysdate + 3,'yyyy-mm-dd')
+	</select>
+
+	<select id="getChecktaskDetail" parameterType="String"
+		resultType="org.gzbpvi.xiaochengxv.domain.CheckTaskDetail">
+		select
+		a.registerno,a.equipmenttype,a.recordno,a.checkitem,b.name,b.leavefactoryno,b.useno
+		from eosdb.taskequipment a left join eosdb.vesselequipment b on
+		a.registerno=b.registerno
+		where a.masterchecker like #{checker} and a.taskno=#{taskno} order by
+		to_number(substr(a.recordno,13,3))
+	</select>
+
+	<select id="getChecktaskEqu" parameterType="String"
+		resultType="org.gzbpvi.xiaochengxv.domain.ChecktaskEquipment">
+		select b.sb_address as equipaddress,b.variety as equipmenttype,b.nextalldate
+		as incheckdate,b.nextonlinedate as outcheckdate,b.useno as useno,c.registerno as registerno 
+		from eosdb.pipeequipment b left join eosdb.pipeequipmentdetail c on b.project_no=c.project_no 
+		where b.project_no=#{registerno}
+		union
+		select c.boileraddress as equipaddress,c.equipmenttype as equipmenttype,c.nextalldate as incheckdate,c.nextyeardate as outcheckdate,
+		c.useno as useno,c.registerno as registerno from eosdb.boilerequipment c where c.registerno=#{registerno}
+		union
+		select d.install_address as equipaddress,d.vesseltype as equipmenttype,d.nextindate as incheckdate,d.nextoutdate as
+		outcheckdate,d.useno as useno,d.registerno as registerno from eosdb.vesselequipment d where d.registerno=#{registerno}
+	</select>
+
+</mapper>

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="org.gzbpvi.xiaochengxv.dao.WxEquipmentDataDao">
+
+<insert id="addWxEquipmentData" parameterType="java.util.List">
+  insert into eosdb.wx_equipmentdata(checker,registerno,longitude,latitude,pickdate,uploaddate,address)
+   values 
+   <foreach collection="list" item="wxEquipmentData" separator=",">
+   (#{newUnit.checker},#{newUnit.registerno},#{newUnit.longitude},#{newUnit.latitude},#{newUnit.pickdate},to_char(sysdate,'yyyy-mm-dd hh24:mi:ss'),#{newUnit.address})
+   </foreach>
+</insert>
+
+</mapper>
